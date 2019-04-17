@@ -1,5 +1,7 @@
 import psycopg2,time
 
+PAIRS_TABLE_NAME = "TRADEDPAIRS"
+
 class DatabaseWrapper:
     def __init__(self,databaseName="morpheus"):
         self.__username = "zaghie"
@@ -17,8 +19,8 @@ class DatabaseWrapper:
             return None 
     
         cursor = self.__conn.cursor() 
-        cursor.execute("""SELECT * FROM TRADEDPAIRS
-                          ORDER BY (period_timestamp,quote_asset) DESC""")
+        cursor.execute("""SELECT * FROM %s
+                          ORDER BY (period_timestamp,quote_asset) DESC""" % (PAIRS_TABLE_NAME))
         results = cursor.fetchall()
         cursor.close()
         return results
