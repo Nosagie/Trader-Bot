@@ -57,6 +57,8 @@ class DatabaseWrapper:
         results = cursor.fetchall()
         cursor.close()
         return results
+
+    def get_candlestick_data(self,symbol,interval="5m")
     
     def close_connection(self):
         self.__conn.close()
