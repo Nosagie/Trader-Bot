@@ -22,7 +22,7 @@ class BinanceApiWrapper:
         raw_response = requests.get(URL)
         try:
             parsed_response = ujson.loads(raw_response.text) if raw_response is not None else None 
-        except ValueError as e:
+        except ValueError:
             return None
 
         if parsed_response is None:
@@ -49,7 +49,6 @@ class BinanceApiWrapper:
         try:
             parsed_response = ujson.loads(raw_response.text) if raw_response is not None else None 
         except ValueError:
-
             return None
         return parsed_response
     
@@ -74,4 +73,21 @@ class BinanceApiWrapper:
             parsed_response = ujson.loads(raw_response.text) if raw_response is not None else None 
         except ValueError:
             return None
+        return parsed_response
+    
+    def current_open_orders(self,base_asset,quote_asset):
+        URL = "https://api.binance.com/api/v3/openOrders"
+        symbol_pair = base_asset + quote_asset
+        curr_time_msecs = int(time.time() * 1000)
+        query_str = "?symbol="+symbol_pair+"&timestamp="+str(curr_time_msecs)
+        sign = self.generate_signature(query_str[1:])
+        header = {'X-MBX-APIKEY':self.get_apiKey()}
+        raw_response = requests.get(URL+query_str+"&signature="+(sign),headers=header)
+        try:
+            parsed_response = ujson.loads(raw_response.text) if raw_response is not None else None 
+        except ValueError:
+            return None
+
+        if parsed_response is None:
+            return None 
         return parsed_response
