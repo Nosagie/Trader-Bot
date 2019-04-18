@@ -39,7 +39,7 @@ class BinanceApiWrapper:
                 +"&timestamp="+str(curr_time_msecs)
                 +"&side=SELL&type=LIMIT"
                 +"&quantity="+str(quantity)
-                +"&timeInForce=FOK"
+                +"&timeInForce=GTC"
                 +"&price="+str(sale_price)
                 +"&newClientOrderId="+order_id)
         sign = self.generate_signature(query_str[1:])

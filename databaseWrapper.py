@@ -1,16 +1,18 @@
 import psycopg2,time
 
 class DatabaseWrapper:
-    def __init__(self,databaseName="morpheus",username="zaghie",password="zaghie"):
+    def __init__(self,databaseName="morpheus",username="zaghie",
+                    password="zaghie",pairs_table="TRADEDPAIRS",
+                    orders_table="ORDERS",portfolio_table="PORTFOLIO"):
         self.__username = username
         self.__password = password
-        self.databaseName = databaseName
-        self.__PAIRS_TABLE_NAME = "TRADEDPAIRS"
-        self.__ORDERS_TABLE_NAME = "ORDERS"
-        self.__PORTFOLIO_TABLE_NAME = "PORTFOLIO"
+        self.DATABASE_NAME = databaseName
+        self.__PAIRS_TABLE_NAME = pairs_table
+        self.__ORDERS_TABLE_NAME = orders_table
+        self.__PORTFOLIO_TABLE_NAME = portfolio_table
         self.__checkBaseQuote = lambda base,quote: (base==None) and (quote==None) 
         try:
-            self.__conn = psycopg2.connect("dbname=%s user=%s password=%s"%(self.databaseName,self.__username,self.__password))
+            self.__conn = psycopg2.connect("dbname=%s user=%s password=%s"%(self.DATABASE_NAME,self.__username,self.__password))
         except Exception:
             self.__conn = None
 
