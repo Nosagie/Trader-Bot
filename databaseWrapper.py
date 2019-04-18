@@ -3,13 +3,15 @@ import psycopg2,time
 class DatabaseWrapper:
     def __init__(self,databaseName="morpheus",username="zaghie",
                     password="zaghie",pairs_table="TRADEDPAIRS",
-                    orders_table="ORDERS",portfolio_table="PORTFOLIO"):
+                    orders_table="ORDERS",portfolio_table="PORTFOLIO",
+                    marketdata_table="MARKETDATA"):
         self.__username = username
         self.__password = password
         self.DATABASE_NAME = databaseName
-        self.__PAIRS_TABLE_NAME = pairs_table
-        self.__ORDERS_TABLE_NAME = orders_table
-        self.__PORTFOLIO_TABLE_NAME = portfolio_table
+        self.__PAIRS_TABLE = pairs_table
+        self.__ORDERS_TABLE = orders_table
+        self.__PORTFOLIO_TABLE = portfolio_table
+        self.__MARKETDATA_TABLE = marketdata_table 
         self.__checkBaseQuote = lambda base,quote: (base==None) and (quote==None) 
         try:
             self.__conn = psycopg2.connect("dbname=%s user=%s password=%s"%(self.DATABASE_NAME,self.__username,self.__password))
@@ -19,7 +21,7 @@ class DatabaseWrapper:
     def __baseQuoteQueryBuilder__(self,base_asset,quote_asset,table_name):
         q1 = """SELECT * FROM %s """ % (table_name)
         q2 = """WHERE BASE_ASSET=%s AND QUOTE_ASSET=%s"""
-        query = q1 if self.__checkBaseQuote(base_asset,quote_asset) else q1 + q2
+        query = q1 if not self.__checkBaseQuote(base_asset,quote_asset) else q1 + q2
         return query
     
     def is_connected(self):
@@ -33,7 +35,7 @@ class DatabaseWrapper:
             return None 
         cursor = self.__conn.cursor() 
         cursor.execute("""SELECT * FROM %s
-                          ORDER BY (period_timestamp,quote_asset) DESC""" % (self.__PAIRS_TABLE_NAME))
+                          ORDER BY (period_timestamp,quote_asset) DESC""" % (self.__PAIRS_TABLE))
         results = cursor.fetchall()
         cursor.close()
         return results
@@ -42,7 +44,7 @@ class DatabaseWrapper:
         if not self.is_connected():
             return None 
         cursor = self.__conn.cursor() 
-        query = self.__baseQuoteQueryBuilder__(base_asset,quote_asset,self.__PORTFOLIO_TABLE_NAME)
+        query = self.__baseQuoteQueryBuilder__(base_asset,quote_asset,self.__PORTFOLIO_TABLE)
         cursor.execute(query,(base_asset,quote_asset))
         results = cursor.fetchall()
         cursor.close()
@@ -52,14 +54,23 @@ class DatabaseWrapper:
         if not self.is_connected():
             return None 
         cursor = self.__conn.cursor() 
-        query = self.__baseQuoteQueryBuilder__(base_asset,quote_asset,self.__ORDERS_TABLE_NAME)
+        query = self.__baseQuoteQueryBuilder__(base_asset,quote_asset,self.__ORDERS_TABLE)
         cursor.execute(query,(base_asset,quote_asset))
         results = cursor.fetchall()
         cursor.close()
         return results
 
-    def get_candlestick_data(self,symbol,interval="5m")
-    
+    def get_market_data(self,base_asset=None,quote_asset=None,interval="5m"):
+        if not self.is_connected():
+            return None 
+        cursor = self.__conn.cursor() 
+        query = self.__baseQuoteQueryBuilder__(base_asset,quote_asset,self.__MARKETDATA_TABLE)
+        query = (query + " AND " + ("INTERVAL='%s'"%interval))
+        cursor.execute(query,(base_asset,quote_asset))
+        results = cursor.fetchall()
+        cursor.close()
+        return results
+
     def close_connection(self):
         self.__conn.close()
 

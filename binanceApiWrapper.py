@@ -87,7 +87,27 @@ class BinanceApiWrapper:
             parsed_response = ujson.loads(raw_response.text) if raw_response is not None else None 
         except ValueError:
             return None
-
         if parsed_response is None:
             return None 
+        return parsed_response
+    
+    def get_kline_data(self,base_asset,quote_asset,interval="5m",start_msecs=None,end_msecs=None):
+        URL = "https://api.binance.com/api/v1/klines"
+        symbol_pair = base_asset + quote_asset
+        if (start_msecs is not None) and (end_msecs is not None):
+            query_str = ("?symbol="+symbol_pair+"&startTime="+str(start_msecs)
+                        +"&endTime="+str(end_msecs)+"&interval="+str(interval))
+        else:
+            query_str = "?symbol="+symbol_pair+"&interval="+str(interval)
+        header = {'X-MBX-APIKEY':self.get_apiKey()}
+        raw_response = requests.get(URL+query_str,headers=header)
+        try:
+            parsed_response = ujson.loads(raw_response.text) if raw_response is not None else None 
+        except ValueError:
+            return None
+        if parsed_response is None:
+            return None 
+        
+        #TODO: ADD ZIP FOR COLUMN NAMES 
+
         return parsed_response
