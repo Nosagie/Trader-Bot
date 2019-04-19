@@ -3,6 +3,7 @@ import hmac
 import hashlib
 import ujson
 import time
+from collections import namedtuple
 
 class BinanceApiWrapper:
     def __init__(self,apiPublicKey="hDkS3KUmSpa8hIXnzxqbiHugKc51ZRTHgkfCJ0vrCEy96rsX9zffoDNOjAmpJ4Uh"
@@ -108,6 +109,12 @@ class BinanceApiWrapper:
         if parsed_response is None:
             return None 
         
-        #TODO: ADD ZIP FOR COLUMN NAMES 
+        column_names = ["open_timestamp","quote_open_px","quote_high_px","quote_low_px","quote_close_px","base_volume","close_timestamp",
+                        "quote_volume","number_of_trades","taker_base_volume","taker_quote_volume",
+                        "interval"]
+        
+        #use everything except ignore column, add interval
+        Results = namedtuple("Results",column_names)
+        kline_data = [Results._make(t[0:-1]+[interval]) for t in parsed_response]
 
-        return parsed_response
+        return kline_data
