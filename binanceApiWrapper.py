@@ -97,9 +97,10 @@ class BinanceApiWrapper:
         symbol_pair = base_asset + quote_asset
         if (start_msecs is not None) and (end_msecs is not None):
             query_str = ("?symbol="+symbol_pair+"&startTime="+str(start_msecs)
-                        +"&endTime="+str(end_msecs)+"&interval="+str(interval))
+                        +"&endTime="+str(end_msecs)+"&interval="+str(interval)
+                        +"&limit=1000")
         else:
-            query_str = "?symbol="+symbol_pair+"&interval="+str(interval)
+            query_str = "?symbol="+symbol_pair+"&interval="+str(interval)+"&limit=1000"
         header = {'X-MBX-APIKEY':self.get_apiKey()}
         raw_response = requests.get(URL+query_str,headers=header)
         try:
@@ -116,5 +117,4 @@ class BinanceApiWrapper:
         #use everything except ignore column, add interval
         Results = namedtuple("Results",column_names)
         kline_data = [Results._make(t[0:-1]+[interval]) for t in parsed_response]
-
         return kline_data
