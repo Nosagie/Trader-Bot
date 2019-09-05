@@ -6,18 +6,24 @@ from binanceApiWrapper import BinanceApiWrapper
 import datetime,time
 from functools import reduce
 
+DEFAULT_PAIRS = [('BTC','USDT'),('ETH','USDT'),('ADA','USDT'),('LTC','USDT')]
+DEFAULT_INTERVALS = ['1m','3m','5m','15m','30m','1h']
+
 class Morpheus:
-    def __init__(self,pairs_to_trade,intervals=['1m','3m','5m','15m','30m','1h']):
+    def __init__(self,pairs_to_trade=DEFAULT_PAIRS,intervals=DEFAULT_INTERVALS):
         self.__database = DatabaseWrapper()
         self.__binance  = BinanceApiWrapper() 
         self.INTERVALS = intervals
         self.TRADING_PAIRS = pairs_to_trade #list of tuples,base,quote 
 
     # gets kline data from Binance
-    def get_historical_data(self,start_date=None,end_date=datetime.datetime.now()):
+    def get_historical_data(self,start_date=None,end_date=datetime.datetime.now(),live_feed=False):
         for base_asset,quote_asset in self.TRADING_PAIRS:
             #convert datetime to msecs
-            most_recent = self.__database.get_most_recent_period_close(base_asset,quote_asset) 
+            most_recent = self.__database.get_most_recent_pair_period_close(base_asset,quote_asset) 
+            if most_recent is None:
+                print ("Pair does not exist")
+                import sys;sys.exit(1)
             if most_recent is None:
                 most_recent = int(start_date.timestamp() * 1000)
             api_start_track = int(datetime.datetime.now().timestamp() * 1000)
@@ -38,13 +44,26 @@ class Morpheus:
                     time.sleep(60)
                     count_api_calls = 0
                 api_start_track = int(datetime.datetime.now().timestamp()*1000) 
-                most_recent = self.__database.get_most_recent_period_close(base_asset,quote_asset) 
+                most_recent = self.__database.get_most_recent_pair_period_close(base_asset,quote_asset) 
                 print (most_recent)
                 print (end_msecs)
             print ("written for " + base_asset + " " + quote_asset + 
                     " end: " + str(most_recent))
         print ("Data Fetched and Stored")
         return 
+
+    def continuous_price_update(self,pairs_to_trade=DEFAULT_PAIRS,intervals=DEFAULT_INTERVALS):
+        while True:
+            most_recent_period = self.__database.get_most_recent_period_close()
+            current_time = int(datetime.datetime.now().timestamp() * 1000)
+            if most_recent_period  < current_time:
+                self.get_historical_data(most_recent_period)
+            else:
+                print("Sleeping")
+                time.sleep(180)
+                
+
+
     
     
             

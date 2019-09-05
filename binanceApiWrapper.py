@@ -92,7 +92,7 @@ class BinanceApiWrapper:
             return None 
         return parsed_response
     
-    def get_kline_data(self,base_asset,quote_asset,interval="5m",start_msecs=None,end_msecs=None):
+    def get_kline_data(self,base_asset,quote_asset,interval="5m",start_msecs=None,end_msecs=None,limit=1000):
         URL = "https://api.binance.com/api/v1/klines"
         symbol_pair = base_asset + quote_asset
         if (start_msecs is not None) and (end_msecs is not None):
@@ -100,7 +100,7 @@ class BinanceApiWrapper:
                         +"&endTime="+str(end_msecs)+"&interval="+str(interval)
                         +"&limit=1000")
         else:
-            query_str = "?symbol="+symbol_pair+"&interval="+str(interval)+"&limit=1000"
+            query_str = "?symbol="+symbol_pair+"&interval="+str(interval)+"&limit="+str(limit)
         header = {'X-MBX-APIKEY':self.get_apiKey()}
         raw_response = requests.get(URL+query_str,headers=header)
         try:

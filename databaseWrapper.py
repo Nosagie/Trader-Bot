@@ -92,7 +92,7 @@ class DatabaseWrapper:
             query = (query + " AND " + ("INTERVAL='%s'"%interval))
         else:
             query = (query + " AND " + ("INTERVAL='%s'"%interval) +
-                    " ORDER BY (OPEN_TIMESTAMP) DESC" + (" LIMIT %s "%num_periods))
+                    " ORDER BY CLOSE_TIMESTAMP DESC" + (" LIMIT %s "%num_periods))
         cursor.execute(query,(base_asset,quote_asset))
         results = cursor.fetchall()
         cursor.close()
@@ -118,7 +118,7 @@ class DatabaseWrapper:
         cursor.close()
         return True
     
-    def get_most_recent_period_close(self,base_asset,quote_asset):
+    def get_most_recent_pair_period_close(self,base_asset,quote_asset):
         if not self.is_connected():
             return None 
         cursor = self.__conn.cursor() 
@@ -127,7 +127,16 @@ class DatabaseWrapper:
         cursor.execute(query,(base_asset,quote_asset))
         result = cursor.fetchall()[0][0]
         return result
-
+    
+    
+    def get_most_recent_period_close(self):
+        if not self.is_connected():
+            return None 
+        cursor = self.__conn.cursor() 
+        query = """SELECT MAX(CLOSE_TIMESTAMP) FROM MARKETDATA"""
+        cursor.execute(query)
+        result = cursor.fetchall()[0][0]
+        return result
 
     def close_connection(self):
         self.__conn.close()
