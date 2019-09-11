@@ -17,6 +17,9 @@ class BinanceApiWrapper:
     
     def get_apiKey(self):
         return self.__publicKey
+    
+    def get_secret_key(self):
+        return self.__secretKey
 
     def get_traded_pairs(self):
         URL = "https://api.binance.com/api/v1/exchangeInfo"

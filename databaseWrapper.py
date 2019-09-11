@@ -92,7 +92,7 @@ class DatabaseWrapper:
             query = (query + " AND " + ("INTERVAL='%s'"%interval))
         else:
             query = (query + " AND " + ("INTERVAL='%s'"%interval) +
-                    " ORDER BY CLOSE_TIMESTAMP DESC" + (" LIMIT %s "%num_periods))
+                    " ORDER BY CLOSE_TIMESTAMP ASC" + (" LIMIT %s "%num_periods))
         cursor.execute(query,(base_asset,quote_asset))
         results = cursor.fetchall()
         cursor.close()

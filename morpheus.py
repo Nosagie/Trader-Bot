@@ -45,8 +45,12 @@ class Morpheus:
                     count_api_calls = 0
                 api_start_track = int(datetime.datetime.now().timestamp()*1000) 
                 most_recent = self.__database.get_most_recent_pair_period_close(base_asset,quote_asset) 
-                print (most_recent)
-                print (end_msecs)
+                time_ = most_recent / 1000
+                time_ = datetime.datetime.fromtimestamp(time_).strftime('%Y-%m-%d %H:%M:%S')
+                end_time_ = end_msecs / 1000
+                end_time_ = datetime.datetime.fromtimestamp(end_time_).strftime('%Y-%m-%d %H:%M:%S')
+                print (time_)
+                print (end_time_)
             print ("written for " + base_asset + " " + quote_asset + 
                     " end: " + str(most_recent))
         print ("Data Fetched and Stored")
@@ -56,11 +60,9 @@ class Morpheus:
         while True:
             most_recent_period = self.__database.get_most_recent_period_close()
             current_time = int(datetime.datetime.now().timestamp() * 1000)
-            if most_recent_period  < current_time:
-                self.get_historical_data(most_recent_period)
-            else:
-                print("Sleeping")
-                time.sleep(180)
+            self.get_historical_data(start_date=most_recent_period)
+            print("Sleeping")
+            time.sleep(3600)
                 
 
 
