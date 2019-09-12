@@ -16,7 +16,7 @@ t = Morpheus(pairs)
 e = DatabaseWrapper()
 
 def investigate_range():
-    fifteen_minute_data  = e.get_market_data(base_asset='BTC',quote_asset='USDT',interval='1h',num_periods=2000)
+    fifteen_minute_data  = e.get_market_data(base_asset='BTC',quote_asset='USDT',interval='15m',num_periods=10)
     final_data_set = []
     #format data_set
     for i in fifteen_minute_data:
@@ -53,8 +53,13 @@ def investigate_range():
     # print (t)
     sns.set(color_codes=True)
     data = dataframe_[["close_time","close_px_change"]]
-    sns.relplot(x="close_time",y="close_px_change",data=data,kind="line")
-    plt.show()
+
+    autocor = dataframe_["close_px_change"].autocorr(lag=2)
+
+    print (autocor)
+
+    # sns.relplot(x="close_time",y="close_px_change",data=data,kind="line")
+    # plt.show()
 
 investigate_range()
 

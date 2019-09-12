@@ -22,7 +22,8 @@ class DatabaseWrapper:
                 "period_timestamp","bot_is_trading")
         try:
             self.__conn = psycopg2.connect("dbname=%s user=%s password=%s"%(self.DATABASE_NAME,self.__username,self.__password))
-        except Exception:
+        except Exception as e:
+            print (e)
             self.__conn = None
 
     def __baseQuoteGetQueryBuilder__(self,base_asset,quote_asset,table_name,column_names=None):
@@ -118,19 +119,26 @@ class DatabaseWrapper:
         cursor.close()
         return True
     
-    def get_most_recent_pair_period_close(self,base_asset,quote_asset):
+    def get_most_recent_pair_period_close(self,base_asset,quote_asset,interval=None):
         if not self.is_connected():
+            print ("Not Connected")
             return None 
         cursor = self.__conn.cursor() 
-        query = """SELECT MAX(CLOSE_TIMESTAMP) FROM MARKETDATA WHERE BASE_ASSET=%s
+        if interval is None:
+            query = """SELECT MAX(CLOSE_TIMESTAMP) FROM MARKETDATA WHERE BASE_ASSET=%s
                  AND QUOTE_ASSET=%s"""
-        cursor.execute(query,(base_asset,quote_asset))
+            cursor.execute(query,(base_asset,quote_asset))
+        else:
+            query = """SELECT MAX(CLOSE_TIMESTAMP) FROM MARKETDATA WHERE BASE_ASSET=%s
+                 AND QUOTE_ASSET=%s AND INTERVAL=%s"""
+            cursor.execute(query,(base_asset,quote_asset,interval))
         result = cursor.fetchall()[0][0]
         return result
     
     
     def get_most_recent_period_close(self):
         if not self.is_connected():
+            print ("returning none from database wrapper")
             return None 
         cursor = self.__conn.cursor() 
         query = """SELECT MAX(CLOSE_TIMESTAMP) FROM MARKETDATA"""
