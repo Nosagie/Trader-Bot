@@ -59,3 +59,6 @@ def run_it():
     
     with Pool(24) as p:
         print (p.starmap(get_prices,arg_list))
+
+if __name__ == "__main__":
+    run_it()

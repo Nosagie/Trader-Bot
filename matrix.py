@@ -11,5 +11,5 @@ def get_hist():
     t.get_historical_data(start,end)
 
 def main():
-    morph = Morpheus([('BTC','USDT')],['15m'])
+    morph = Morpheus()
 

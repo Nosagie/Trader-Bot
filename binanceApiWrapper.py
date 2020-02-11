@@ -6,8 +6,8 @@ import time
 from collections import namedtuple
 
 class BinanceApiWrapper:
-    def __init__(self,apiPublicKey="hDkS3KUmSpa8hIXnzxqbiHugKc51ZRTHgkfCJ0vrCEy96rsX9zffoDNOjAmpJ4Uh"
-                ,secretKey="7ADP6JjsWAm0Kc8ZFWJq9genQbXnNbnejSEsqlOWnl42a77XZ5cMPaRomME0TfZw"):
+    def __init__(self,apiPublicKey="INSERT KEY"
+                ,secretKey="INSERT KEY"):
         self.__publicKey = apiPublicKey
         self.__secretKey = secretKey
     

@@ -4,8 +4,8 @@ from collections import namedtuple
 from ast import literal_eval
 
 class DatabaseWrapper:
-    def __init__(self,databaseName="morpheus",username="zaghie",
-                    password="zaghie",pairs_table="TRADEDPAIRS",
+    def __init__(self,databaseName="NAME",username="USERNAME",
+                    password="PASSWORD",pairs_table="TRADEDPAIRS",
                     orders_table="ORDERS",portfolio_table="PORTFOLIO",
                     marketdata_table="MARKETDATA"):
         self.__username = username
